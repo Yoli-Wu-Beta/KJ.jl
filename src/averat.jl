@@ -28,6 +28,7 @@ function averat(run::Vector{Sample},
         xlab = P * "/" * D
         ylab = d * "/" * D
         is_RbSr = (P == "Rb87") && (D == "Sr87") && (d == "Sr86")
+        is_LuHf = (P == "Lu176") && (D == "Hf176") && (d == "Hf177")
     end
   
     if is_RbSr
