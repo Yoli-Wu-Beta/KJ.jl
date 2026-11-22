@@ -32,7 +32,11 @@ function averat(run::Vector{Sample},
   
     if is_RbSr
         column_names = ["name", xlab, "s[" * xlab * "]", ylab, "s[" * ylab * "]", "rho",
-                    "Rb87/Sr86", "s[Rb87/Sr86]", "Sr87/Sr86", "s[Sr87/Sr86]"]
+                        "Rb87/Sr86", "s[Rb87/Sr86]", "Sr87/Sr86", "s[Sr87/Sr86]"]
+        out = DataFrame(hcat(fill("", ns), zeros(ns, 9)), column_names)
+    elseif is_LuHf
+        column_names = ["name", xlab, "s[" * xlab * "]", ylab, "s[" * ylab * "]", "rho",
+                        "Lu176/Hf177", "s[Lu176/Hf177]", "Hf176/Hf177", "s[Hf176/Hf177]"]
         out = DataFrame(hcat(fill("", ns), zeros(ns, 9)), column_names)
     else
         column_names = ["name", xlab, "s[" * xlab * "]", ylab, "s[" * ylab * "]", "rho"]
@@ -41,19 +45,26 @@ function averat(run::Vector{Sample},
   
     for i in 1:ns
         samp = run[i]
-        out[i,:name] = samp.sname
+        out[i, :name] = samp.sname
         x, sx, y, sy, rho = averat(samp, channels, blank, pars; physics=physics, numerical=numerical)
         
         if is_RbSr
-           Sr87_Sr86 = 1 / y
-           s_Sr87_Sr86 = sy * (Sr87_Sr86^2)
-           Rb87_Sr86 = x * Sr87_Sr86
-           s_Rb87_Sr86 = Rb87_Sr86 * sqrt((sx / x)^2 + (s_Sr87_Sr86 / Sr87_Sr86)^2 + 2*rho*(sx / x)*(s_Sr87_Sr86 / Sr87_Sr86))
-           out[i, 2:6] = [x, sx, y, sy, rho]
-           out[i, 7:10] = [Rb87_Sr86, s_Rb87_Sr86, Sr87_Sr86, s_Sr87_Sr86]
-       else
-           out[i, 2:end] = [x, sx, y, sy, rho]
-       end
+            Sr87_Sr86 = 1 / y
+            s_Sr87_Sr86 = sy * (Sr87_Sr86^2)
+            Rb87_Sr86 = x * Sr87_Sr86
+            s_Rb87_Sr86 = Rb87_Sr86 * sqrt((sx / x)^2 + (s_Sr87_Sr86 / Sr87_Sr86)^2 - 2 * rho * (sx / x) * (s_Sr87_Sr86 / Sr87_Sr86))
+            out[i, 2:6] = [x, sx, y, sy, rho]
+            out[i, 7:10] = [Rb87_Sr86, s_Rb87_Sr86, Sr87_Sr86, s_Sr87_Sr86]
+        elseif is_LuHf
+            Hf176_Hf177 = 1 / y
+            s_Hf176_Hf177 = sy * (Hf176_Hf177^2)
+            Lu176_Hf177 = x * Hf176_Hf177
+            s_Lu176_Hf177 = Lu176_Hf177 * sqrt((sx / x)^2 + (s_Hf176_Hf177 / Hf176_Hf177)^2 - 2 * rho * (sx / x) * (s_Hf176_Hf177 / Hf176_Hf177))
+            out[i, 2:6] = [x, sx, y, sy, rho]
+            out[i, 7:10] = [Lu176_Hf177, s_Lu176_Hf177, Hf176_Hf177, s_Hf176_Hf177]
+        else
+            out[i, 2:end] = [x, sx, y, sy, rho]
+        end
     end
     return out
 end
