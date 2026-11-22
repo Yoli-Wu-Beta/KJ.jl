@@ -53,14 +53,14 @@ function averat(run::Vector{Sample},
             Sr87_Sr86 = 1 / y
             s_Sr87_Sr86 = sy * (Sr87_Sr86^2)
             Rb87_Sr86 = x * Sr87_Sr86
-            s_Rb87_Sr86 = Rb87_Sr86 * sqrt((sx / x)^2 + (s_Sr87_Sr86 / Sr87_Sr86)^2 - 2 * rho * (sx / x) * (s_Sr87_Sr86 / Sr87_Sr86))
+            s_Rb87_Sr86 = Rb87_Sr86 * sqrt((sx / x)^2 + (s_Sr87_Sr86 / Sr87_Sr86)^2 + 2 * rho * (sx / x) * (s_Sr87_Sr86 / Sr87_Sr86))
             out[i, 2:6] = [x, sx, y, sy, rho]
             out[i, 7:10] = [Rb87_Sr86, s_Rb87_Sr86, Sr87_Sr86, s_Sr87_Sr86]
         elseif is_LuHf
             Hf176_Hf177 = 1 / y
             s_Hf176_Hf177 = sy * (Hf176_Hf177^2)
             Lu176_Hf177 = x * Hf176_Hf177
-            s_Lu176_Hf177 = Lu176_Hf177 * sqrt((sx / x)^2 + (s_Hf176_Hf177 / Hf176_Hf177)^2 - 2 * rho * (sx / x) * (s_Hf176_Hf177 / Hf176_Hf177))
+            s_Lu176_Hf177 = Lu176_Hf177 * sqrt((sx / x)^2 + (s_Hf176_Hf177 / Hf176_Hf177)^2 + 2 * rho * (sx / x) * (s_Hf176_Hf177 / Hf176_Hf177))
             out[i, 2:6] = [x, sx, y, sy, rho]
             out[i, 7:10] = [Lu176_Hf177, s_Lu176_Hf177, Hf176_Hf177, s_Hf176_Hf177]
         else
